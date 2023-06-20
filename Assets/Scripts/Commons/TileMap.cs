@@ -1,9 +1,9 @@
 #nullable enable
 using System.Collections.Generic;
+using UnityEngine;
 class TileMap
 {
-    
-    private Tile?[,] _tileMap = new Tile[Constants.BoardSize, Constants.BoardSize];
+    private TileMapItem?[,] _tileMap = new TileMapItem[Constants.BoardSize, Constants.BoardSize];
 
     public TileMap()
     { }
@@ -22,28 +22,12 @@ class TileMap
         }
     }
 
-    public Tile? this[int x, int y]
+    public TileMapItem? this[int x, int y]
     {
         get { return _tileMap[y, x]; }
         set
         {
             _tileMap[y, x] = value;
-        }
-    }
-
-    public void SyncAllTile()
-    {
-
-        for (int y = 0; y < Constants.BoardSize; y++)
-        {
-            for (int x = 0; x < Constants.BoardSize; x++)
-            {
-                if (this[x, y] is null)
-                {
-                    continue;
-                }
-                this[x, y]!.Sync();
-            }
         }
     }
 
@@ -71,17 +55,17 @@ class TileMap
     {
         for (; times > 0; times--)
         {
-            Tile?[,] newTileMap = new Tile?[Constants.BoardSize, Constants.BoardSize];
+            TileMapItem?[,] newTileMap = new TileMapItem?[Constants.BoardSize, Constants.BoardSize];
             for (int y = 0; y < Constants.BoardSize; y++)
             {
                 for (int x = 0; x < Constants.BoardSize; x++)
                 {
-                    var tile = _tileMap[Constants.BoardSize - x - 1, y];
-                    newTileMap[y, x] = tile;
+                    var tileMapItem = _tileMap[Constants.BoardSize - x - 1, y];
+                    newTileMap[y, x] = tileMapItem;
 
-                    if (tile is not null)
+                    if (tileMapItem is not null)
                     {
-                        tile.position = (x, y);
+                        tileMapItem.position = new Vector2Int(x, y);
                     }
                 }
             }
@@ -115,15 +99,7 @@ class TileMap
         return true;
     }
 
-    public void Destroy()
-    {
-        foreach (var tile in _tileMap)
-        {
-            tile?.tileGameObject.Destroy();
-        }
-    }
-
-    public IEnumerable<Tile> GetTiles()
+    public IEnumerable<TileMapItem> GetTiles()
     {
         for (int y = 0; y < Constants.BoardSize; y++)
         {
@@ -135,6 +111,23 @@ class TileMap
                 }
                 yield return this[x, y]!;
             }
+        }
+    }
+
+    public void Commit()
+    {
+        foreach (var tile in GetTiles())
+        {
+            tile.Commit();
+        }
+    }
+
+    public void Destroy()
+    {
+        foreach (var tile in GetTiles())
+        {
+            tile.isDeleted = true;
+            tile.Commit();
         }
     }
 }

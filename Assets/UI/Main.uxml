@@ -17,4 +17,13 @@
         </ui:VisualElement>
         <ui:Button text="新游戏" display-tooltip-when-elided="true" name="GameOverRestartButton" focusable="false" style="border-left-color: rgb(255, 255, 255); border-right-color: rgb(255, 255, 255); border-top-color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; margin-top: 16px; padding-left: 32px; padding-right: 32px; transition-duration: 0.3s;" />
     </ui:VisualElement>
+    <ui:GroupBox name="Footer" style="position: absolute; bottom: 0; width: 100%; flex-direction: row; -unity-font: url(&apos;project://database/Assets/Fonts/SourceHanSansSC-Bold.otf?fileID=12800000&amp;guid=1bb857fe7d1914e49b946bf160dfa90d&amp;type=3#SourceHanSansSC-Bold&apos;); -unity-font-style: normal; -unity-font-definition: initial; color: rgb(120, 110, 101); justify-content: space-between; align-self: auto; align-items: flex-end; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;">
+        <ui:GroupBox>
+            <ui:Label tabindex="-1" text="项目地址：" display-tooltip-when-elided="true" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+            <ui:Button text="https://github.com/MoyuScript/unity-2048" display-tooltip-when-elided="true" name="RepoLink" focusable="false" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; background-color: rgba(188, 188, 188, 0); border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 1px;" />
+        </ui:GroupBox>
+        <ui:GroupBox>
+            <ui:Label tabindex="-1" text="{Version}" display-tooltip-when-elided="true" name="Version" style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+        </ui:GroupBox>
+    </ui:GroupBox>
 </ui:UXML>

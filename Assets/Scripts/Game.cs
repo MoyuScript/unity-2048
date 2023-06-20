@@ -21,8 +21,8 @@ public class Game : MonoBehaviour
     void Start()
     {
         NewGame();
-        Ui.UiDocument.rootVisualElement.Q<Button>("ButtonNewGame").clicked += NewGame;
-        Ui.UiDocument.rootVisualElement.Q<Button>("GameOverRestartButton").clicked += NewGame;
+        UI.uiDocument.rootVisualElement.Q<Button>("ButtonNewGame").clicked += NewGame;
+        UI.uiDocument.rootVisualElement.Q<Button>("GameOverRestartButton").clicked += NewGame;
     }
 
     void Update()

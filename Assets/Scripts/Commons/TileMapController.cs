@@ -14,7 +14,7 @@ class TileMapController
 
     public void GenerateNewTile()
     {
-        List<(int x, int y)> availablePosition = new();
+        List<Vector2Int> availablePosition = new();
 
         for (int y = 0; y < Constants.BoardSize; y++)
         {
@@ -22,7 +22,7 @@ class TileMapController
             {
                 if (tileMap[x, y] == null)
                 {
-                    availablePosition.Add((x, y));
+                    availablePosition.Add(new Vector2Int(x, y));
                 }
             }
         }
@@ -33,15 +33,12 @@ class TileMapController
         }
         int index = UnityEngine.Random.Range(0, availablePosition.Count);
         var pos = availablePosition[index];
-        TileGameObject tileGameObject = new (pos, 2, tilePrefab);
-        tileMap[pos.x, pos.y] = new Tile(tileGameObject) {
-            position = pos,
-            value = 2,
-            isDeleted = false,
-        };
+        Tile tile = new (pos, 2, tilePrefab);
+        TileMapItem tileMapItem = new(tile);
+        tileMap[pos.x, pos.y] = tileMapItem;
     }
 
-    private (TileMap nextTileMap, List<Tile> deletedTiles, List<Tile> mergedTiles) GetNextTileMap(Constants.Direction moveDirection)
+    private (TileMap nextTileMap, List<TileMapItem> deletedTiles, List<TileMapItem> mergedTiles) GetNextTileMap(Constants.Direction moveDirection)
     {
         TileMap nextTileMap = new(tileMap);
         int rotateTimes = moveDirection switch
@@ -54,8 +51,11 @@ class TileMapController
         };
         nextTileMap.Rotate(rotateTimes);
 
-        List<Tile> mergedTiles = new();
-        List<Tile> deletedTiles = new();
+        List<TileMapItem> mergedTiles = new();
+        List<TileMapItem> deletedTiles = new();
+
+        // From => To
+        Dictionary<TileMapItem, TileMapItem> mergedTileMap = new();
 
         for (int y = 0; y < Constants.BoardSize; y++)
         {
@@ -76,20 +76,22 @@ class TileMapController
                     {
                         // Move Left
                         nextTileMap[nx, y] = tile;
-                        tile.position = (nx, y);
+                        tile.position = new Vector2Int(nx, y);
                         nextTileMap[nx + 1, y] = null;
                     }
                     else if (leftTile.value == tile.value && !mergedTiles.Contains(tile) && !mergedTiles.Contains(leftTile))
                     {
                         // Merge
                         nextTileMap[nx, y] = tile;
-                        tile.position = (nx, y);
+                        tile.position = new Vector2Int(nx, y);
 
                         leftTile.isDeleted = true;
                         deletedTiles.Add(leftTile);
                         nextTileMap[nx + 1, y] = null;
                         tile.value *= 2;
                         mergedTiles.Add(tile);
+
+                        mergedTileMap.Add(tile, leftTile);
                     }
                     else
                     {
@@ -100,7 +102,13 @@ class TileMapController
             }
         }
 
+
         nextTileMap.Rotate((4 - rotateTimes) % 4);
+        // Set merged tile position
+        foreach (var (fromTile, toTile) in mergedTileMap)
+        {
+            toTile.position = fromTile.position;
+        }
         return (nextTileMap, deletedTiles, mergedTiles);
     }
 
@@ -115,10 +123,10 @@ class TileMapController
         
         foreach (var tile in deletedTiles)
         {
-            tile.Sync();
+            tile.Commit();
         }
         tileMap = nextTileMap;
-        tileMap.SyncAllTile();
+        tileMap.Commit();
 
         foreach (var tile in mergedTiles)
         {
